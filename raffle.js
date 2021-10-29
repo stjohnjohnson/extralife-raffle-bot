@@ -30,6 +30,11 @@ class Raffle extends EventEmitter {
         }
     }
 
+    // Returns human readible text for the start date
+    getStartDate() {
+        return this.start.toLocaleString(DateTime.DATETIME_FULL);
+    }
+
     // Returns time left until the next drawing
     getTimeUntil() {
         let minutesLeft = this.getMinutesUntil();

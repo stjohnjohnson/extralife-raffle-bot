@@ -39,7 +39,7 @@ function getDrawingMessage() {
     let message = '';
 
     if (!raffle.hasStarted()) {
-        message = `The NFT raffle drawings don't start until November 6th at 8:30am PT.  You can still get entries in early by donating.  More info with !raffle.`;
+        message = `The NFT raffle drawings don't start until ${raffle.getStartDate()}.  You can still get entries in early by donating.  More info with !raffle.`;
     } else if (raffle.hasEnded()) {
         // TODO add fancy hearts
         message = `The NFT raffle is complete!  Thank you to everyone who donated.`;
