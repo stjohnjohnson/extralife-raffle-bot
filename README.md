@@ -1,6 +1,20 @@
 # extralife-raffle-bot
 Simple Twitch Bot to raffle off things for Extra Life stream
 
+# Usage
+
+Setup your .env file with the configuration defined below.
+
+Node:
+```bash
+npm start
+```
+
+Docker:
+```bash
+docker run --rm -it --env-file .env stjohnjohnson/extralife-raffle-bot
+```
+
 ## Configuration
 
 Set the following environment variables:
