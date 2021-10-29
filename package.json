@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "extra-life-api": "^7.0.1",
+    "luxon": "^2.0.2",
+    "tmi.js": "^1.8.5"
+  },
+  "name": "extralife-raffle-bot",
+  "description": "Simple Twitch Bot to raffle off things for Extra Life stream",
+  "version": "1.0.0",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stjohnjohnson/extralife-raffle-bot.git"
+  },
+  "author": "St. John Johnson <st.john.johnson@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/stjohnjohnson/extralife-raffle-bot/issues"
+  },
+  "homepage": "https://github.com/stjohnjohnson/extralife-raffle-bot#readme"
+}
