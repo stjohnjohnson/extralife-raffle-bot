@@ -1,5 +1,5 @@
 import { getUserDonations } from 'extra-life-api';
-import { readFile, writeFile } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 
 const ethAddressRegex = /0x[a-fA-F0-9]{40}/;
 
@@ -60,7 +60,15 @@ class Entries {
     }
 
     async parseHistory(path) {
-        JSON.parse(readFile(path)).entries.map(donation => {
+        let fileData;
+        try {
+            fileData = JSON.parse(readFileSync(path));
+        } catch (error) {
+            fileData = { entries: [] };
+        }
+
+        fileData.entries.map(donation => {
+            console.log(`Adding manual entry: ${donation.name}`);
             this.addManualDonation(donation);
         });
     }
@@ -132,7 +140,12 @@ class Entries {
     }
 
     async addManualDonationToHistory(historyFilePath, name, address, value) {
-        let fileData = JSON.parse(readFile(historyFilePath));
+        let fileData;
+        try {
+            fileData = JSON.parse(readFileSync(historyFilePath));
+        } catch (error) {
+            fileData = { entries: [] };
+        }
 
         fileData.entries.push({
             name,
@@ -140,7 +153,7 @@ class Entries {
             value
         });
 
-        writeFile(historyFilePath, JSON.stringify(fileData, null, 2));
+        writeFileSync(historyFilePath, JSON.stringify(fileData, null, 2));
     }
 }
 

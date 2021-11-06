@@ -35,3 +35,4 @@ Set the following environment variables:
 - Admins can make the draw (`!draw`)
 - Learn More (`!raffle`)
 - Check when the drawing is (`!drawing`)
+- Allow manually adding raffle entries (`!add <name> <address> <value>`)

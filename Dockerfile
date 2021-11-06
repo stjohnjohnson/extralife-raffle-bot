@@ -10,5 +10,5 @@ WORKDIR /usr/src/app
 RUN chown -R node:node /usr/src/app
 USER node
 COPY --from=builder --chown=node:node /app/node_modules /usr/src/app/node_modules/
-COPY *.js ./
+COPY . .
 CMD [ "npm", "start" ]
