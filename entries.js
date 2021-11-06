@@ -4,9 +4,10 @@ import { readFileSync, writeFileSync } from 'fs';
 const ethAddressRegex = /0x[a-fA-F0-9]{40}/;
 
 class Entries {
-    constructor(participantID, raffleCost) {
+    constructor(participantID, raffleCost, historyFile) {
         this.participantID = participantID;
         this.raffleCost = raffleCost;
+        this.historyFile = historyFile;
 
         // Entries and Donors
         this.seenDonationIDs = {};
@@ -59,10 +60,10 @@ class Entries {
         }
     }
 
-    async parseHistory(path) {
+    async parseHistory() {
         let fileData;
         try {
-            fileData = JSON.parse(readFileSync(path));
+            fileData = JSON.parse(readFileSync(this.historyFile));
         } catch (error) {
             fileData = { entries: [] };
         }
@@ -71,6 +72,8 @@ class Entries {
             console.log(`Adding manual entry: ${donation.name}`);
             this.addManualDonation(donation);
         });
+
+        return this.parseEntries();
     }
 
     refreshDonations() {
@@ -99,6 +102,10 @@ class Entries {
             return this.loadDonations(page + 1)
         }
 
+        return this.parseEntries();
+    }
+
+    parseEntries() {
         // If we're done, flatten $ amount into entries
         let entries = [];
         Object.keys(this.donations).forEach(address => {
@@ -110,10 +117,10 @@ class Entries {
         this.entries = entries;
         this.count = entries.length;
 
-        return entries;
+        return this.entries;
     }
 
-    async addManualDonation(historyFilePath, name, address, value) {
+    async addManualDonation(name, address, value) {
         if (!ethAddressRegex.test(address)) {
             return 'Address does not look valid.';
         }
@@ -134,16 +141,18 @@ class Entries {
             this.donors[address].push(name);
         }
 
-        this.addManualDonationToHistory(historyFilePath, name, address, value);
+        this.addManualDonationToHistory(name, address, value);
+        this.parseEntries();
 
         return `Manual entry added for ${name}.`
     }
 
-    async addManualDonationToHistory(historyFilePath, name, address, value) {
+    async addManualDonationToHistory(name, address, value) {
         let fileData;
         try {
-            fileData = JSON.parse(readFileSync(historyFilePath));
+            fileData = JSON.parse(readFileSync(this.historyFile));
         } catch (error) {
+            console.log('errrrror');
             fileData = { entries: [] };
         }
 
@@ -153,7 +162,7 @@ class Entries {
             value
         });
 
-        writeFileSync(historyFilePath, JSON.stringify(fileData, null, 2));
+        writeFileSync(this.historyFile, JSON.stringify(fileData, null, 2));
     }
 }
 

@@ -34,6 +34,7 @@ const raffle = new Raffle(
 const entries = new Entries(
     process.env.EXTRALIFE_PARTICIPANT_ID,
     process.env.RAFFLE_COST,
+    process.env.HISTORY_FILE_PATH,
 );
 
 function getDrawingMessage() {
@@ -100,7 +101,7 @@ function sleep(ms) {
     const channels = [`${process.env.TWITCH_CHANNEL}`];
 
     // Load manually added entries
-    entries.parseHistory(process.env.HISTORY_FILE_PATH);
+    entries.parseHistory();
 
     // Create the client
     const client = new tmi.Client({
@@ -159,7 +160,11 @@ function sleep(ms) {
                         return;
                     }
 
-                    entries.addManualDonation(process.env.HISTORY_FILE_PATH, messageTokens[1], messageTokens[2], messageTokens[3]);
+                    entries.addManualDonation(messageTokens[1], messageTokens[2], messageTokens[3]).then((message) => {
+                        client.say(channel, message);
+                    }).catch((err) => {
+                        console.error('unable to write donation', err);
+                    });
                 }
                 break;
 
