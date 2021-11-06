@@ -134,7 +134,10 @@ function sleep(ms) {
         // Ignore self
         if (self) return;
 
-        switch (message.toLowerCase()) {
+        let messageTokens = tokenize(message);
+        if (messageTokens.length == 0) return;
+
+        switch (messageTokens[0].toLowerCase()) {
             case '!raffle':
             case '!enter':
                 client.say(channel, getRaffleMessage());
@@ -144,6 +147,19 @@ function sleep(ms) {
                 // Check is admin
                 if (tags.username === process.env.ADMIN_USERNAME) {
                     client.say(channel, getDrawMessage());
+                }
+                break;
+
+            case '!add':
+                // Check is admin
+                if (tags.username === process.env.ADMIN_USERNAME) {
+                    // Expect arguments to be in the form of "!add <name> <address> <donation_amount>"
+                    if (messageTokens.length != 4) {
+                        client.say(channel, `Usage: !add <name> <address> <amount>`);
+                        return;
+                    }
+
+                    entries.addManualDonation(process.env.HISTORY_FILE_PATH, messageTokens[1], messageTokens[2], messageTokens[3]);
                 }
                 break;
 
