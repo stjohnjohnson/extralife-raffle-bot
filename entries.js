@@ -1,4 +1,5 @@
 import { getUserDonations } from 'extra-life-api';
+import { readFileSync, writeFileSync } from 'fs';
 
 const ethAddressRegex = /0x[a-fA-F0-9]{40}/;
 
@@ -58,6 +59,20 @@ class Entries {
         }
     }
 
+    async parseHistory(path) {
+        let fileData;
+        try {
+            fileData = JSON.parse(readFileSync(path));
+        } catch (error) {
+            fileData = { entries: [] };
+        }
+
+        fileData.entries.map(donation => {
+            console.log(`Adding manual entry: ${donation.name}`);
+            this.addManualDonation(donation);
+        });
+    }
+
     refreshDonations() {
         return this.loadDonations().then((entries) => {
             console.log(`Refreshed entries ${entries.length} across ${Object.keys(this.donors).length} donors`);
@@ -96,6 +111,49 @@ class Entries {
         this.count = entries.length;
 
         return entries;
+    }
+
+    async addManualDonation(historyFilePath, name, address, value) {
+        if (!ethAddressRegex.test(address)) {
+            return 'Address does not look valid.';
+        }
+
+        // Store value
+        if (!this.donations[address]) {
+            this.donations[address] = 0;
+        }
+
+        this.donations[address] += value;
+
+        // Store donor lookup
+        if (!this.donors[address]) {
+            this.donors[address] = [];
+        }
+
+        if (this.donors[address].indexOf(name) === -1) {
+            this.donors[address].push(name);
+        }
+
+        this.addManualDonationToHistory(historyFilePath, name, address, value);
+
+        return `Manual entry added for ${name}.`
+    }
+
+    async addManualDonationToHistory(historyFilePath, name, address, value) {
+        let fileData;
+        try {
+            fileData = JSON.parse(readFileSync(historyFilePath));
+        } catch (error) {
+            fileData = { entries: [] };
+        }
+
+        fileData.entries.push({
+            name,
+            address,
+            value
+        });
+
+        writeFileSync(historyFilePath, JSON.stringify(fileData, null, 2));
     }
 }
 

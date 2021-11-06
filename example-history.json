@@ -1,0 +1,14 @@
+{
+  "entries": [
+    {
+      "address": "0x82BAECF3A0941aE2fbB7d515A261ddC5d4686Be2",
+      "name": "Ricky",
+      "value": 0
+    },
+    {
+      "address": "not-a-real-address",
+      "name": "fake",
+      "amount": 1000
+    }
+  ]
+}
