@@ -1,4 +1,5 @@
 import { getUserDonations } from 'extra-life-api';
+import { readFile, writeFile } from 'fs';
 
 const ethAddressRegex = /0x[a-fA-F0-9]{40}/;
 
@@ -58,6 +59,12 @@ class Entries {
         }
     }
 
+    async parseHistory(path) {
+        JSON.parse(readFile(path)).entries.map(donation => {
+            this.addManualDonation(donation);
+        });
+    }
+
     refreshDonations() {
         return this.loadDonations().then((entries) => {
             console.log(`Refreshed entries ${entries.length} across ${Object.keys(this.donors).length} donors`);
@@ -96,6 +103,44 @@ class Entries {
         this.count = entries.length;
 
         return entries;
+    }
+
+    async addManualDonation(historyFilePath, name, address, value) {
+        if (!ethAddressRegex.test(address)) {
+            return 'Address does not look valid.';
+        }
+
+        // Store value
+        if (!this.donations[address]) {
+            this.donations[address] = 0;
+        }
+
+        this.donations[address] += value;
+
+        // Store donor lookup
+        if (!this.donors[address]) {
+            this.donors[address] = [];
+        }
+
+        if (this.donors[address].indexOf(name) === -1) {
+            this.donors[address].push(name);
+        }
+
+        this.addManualDonationToHistory(historyFilePath, name, address, value);
+
+        return `Manual entry added for ${name}.`
+    }
+
+    async addManualDonationToHistory(historyFilePath, name, address, value) {
+        let fileData = JSON.parse(readFile(historyFilePath));
+
+        fileData.entries.push({
+            name,
+            address,
+            value
+        });
+
+        writeFile(historyFilePath, JSON.stringify(fileData, null, 2));
     }
 }
 

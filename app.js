@@ -16,6 +16,7 @@ const configErrors = [
     'RAFFLE_STARTDATE',         // Date the raffle starts
     'RAFFLE_ENDDATE',           // Date the raffle ends
     'ADMIN_USERNAME',           // Username who can activate the draw
+    'HISTORY_FILE_PATH',        // Path to the history file to store manually added donations
 ].map(key => {
     if (!process.env[key]) {
         return `${key} is a required environment variable`;
@@ -97,6 +98,9 @@ function sleep(ms) {
     console.log('server starting');
     await entries.refreshDonations();
     const channels = [`${process.env.TWITCH_CHANNEL}`];
+
+    // Load manually added entries
+    entries.parseHistory(process.env.HISTORY_FILE_PATH);
 
     // Create the client
     const client = new tmi.Client({
