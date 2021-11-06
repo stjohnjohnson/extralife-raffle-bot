@@ -134,7 +134,7 @@ function sleep(ms) {
         // Ignore self
         if (self) return;
 
-        let messageTokens = tokenize(message);
+        let messageTokens = message.split(' ');
         if (messageTokens.length == 0) return;
 
         switch (messageTokens[0].toLowerCase()) {
