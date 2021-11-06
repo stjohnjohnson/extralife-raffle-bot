@@ -1,8 +1,14 @@
-FROM node:16-alpine
+FROM node:16-alpine as base
+
+FROM base as builder
+WORKDIR /app
+COPY ["package.json", "package-lock.json", "./"]
+RUN ["npm", "install"]
+
+FROM base
 WORKDIR /usr/src/app
 RUN chown -R node:node /usr/src/app
 USER node
-COPY --chown=node:node package*.json ./
-RUN npm install
-COPY *.js .
+COPY --from=builder --chown=node:node /app/node_modules /usr/src/app/node_modules/
+COPY *.js ./
 CMD [ "npm", "start" ]
